@@ -1,7 +1,9 @@
+// EntierContraint.h
 #ifndef ENTIERCONTRAINT_H
 #define ENTIERCONTRAINT_H
 
 #include <iostream>
+#include <stdexcept>
 
 class EntierContraint {
 public:

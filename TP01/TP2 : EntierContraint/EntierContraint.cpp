@@ -1,16 +1,26 @@
+// EntierContraint.cpp
 #include "EntierContraint.h"
 #include <iostream>
-#include <algorithm>
 
-EntierContraint::EntierContraint(int valeur, int min, int max)
-    : m_min(min), m_max(max), m_val(valeur) {
-    setValeur(valeur); // Pour s'assurer que la valeur initiale est dans les limites
+EntierContraint::EntierContraint(int valeur, int min, int max) {
+    setMin(min);
+    setMax(max);
+    try {
+        setValeur(valeur);
+    } catch (char const* erreur) {
+        std::cout << "Erreur lors de l'initialisation : " << erreur << std::endl;
+        m_val = m_min; // Initialiser avec la valeur minimale par défaut
+    }
 }
 
 EntierContraint::~EntierContraint() {}
 
 void EntierContraint::setValeur(int valeur) {
-    m_val = std::clamp(valeur, m_min, m_max);
+    if (valeur >= m_min && valeur <= m_max) {
+        m_val = valeur;
+    } else {
+        throw "La valeur est hors des limites";
+    }
 }
 
 int EntierContraint::getValeur() const {
@@ -18,8 +28,12 @@ int EntierContraint::getValeur() const {
 }
 
 void EntierContraint::setMin(int min) {
-    m_min = min;
-    setValeur(m_val); // Ajuster la valeur si nécessaire
+    if (min <= m_max) {
+        m_min = min;
+        if (m_val < m_min) m_val = m_min;
+    } else {
+        throw "La valeur minimale ne peut pas être supérieure à la valeur maximale";
+    }
 }
 
 int EntierContraint::getMin() const {
@@ -27,8 +41,12 @@ int EntierContraint::getMin() const {
 }
 
 void EntierContraint::setMax(int max) {
-    m_max = max;
-    setValeur(m_val); // Ajuster la valeur si nécessaire
+    if (max >= m_min) {
+        m_max = max;
+        if (m_val > m_max) m_val = m_max;
+    } else {
+        throw "La valeur maximale ne peut pas être inférieure à la valeur minimale";
+    }
 }
 
 int EntierContraint::getMax() const {
@@ -38,7 +56,11 @@ int EntierContraint::getMax() const {
 void EntierContraint::saisir(std::istream& entree) {
     int valeur;
     entree >> valeur;
-    setValeur(valeur);
+    try {
+        setValeur(valeur);
+    } catch (char const* erreur) {
+        std::cout << "Erreur de saisie : " << erreur << std::endl;
+    }
 }
 
 void EntierContraint::afficher(std::ostream& sortie) const {
