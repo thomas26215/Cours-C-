@@ -36,13 +36,17 @@ void Point::setY(int y) {
 
 void Point::saisirEntree(std::istream& entree) {
     std::string nom;
+    int x;
+    int y;
     std::cout << "Entrez le nom du point : ";
     entree >> nom;
     this->setNom(nom);
     std::cout << "Entrez les coordonnées x : ";
     entree >> x;
+    this->setX(x);
     std::cout << "Entrez les coordonnées y : ";
     entree >> y;
+    this->setY(y);
 }
 
 void Point::afficher(std::ostream& sortie) const {
