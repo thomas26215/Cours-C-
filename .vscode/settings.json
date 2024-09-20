@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
+        "*.embeddedhtml": "html",
         "string": "cpp",
         "iosfwd": "cpp",
         "iostream": "cpp",
@@ -45,6 +46,7 @@
         "ostream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "sstream": "cpp"
     }
 }

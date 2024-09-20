@@ -10,9 +10,11 @@ public:
     int getMin() const;
     int getMax() const;
     int getVal() const;
+    inline operator int() const{return m_val;}
     void setVal(int valeur);
     void saisir(std::istream & entree = std::cin);
     void afficher(std::ostream & sortie = std::cout) const;
+    
 
     // A Compléter : rajouter operator int
 
@@ -26,6 +28,9 @@ private:
     static constexpr int MIN_DEF = std::numeric_limits<int>::min(); // le plus petit int possible
     static constexpr int MAX_DEF = std::numeric_limits<int>::max(); // le plus grand int possible
 };
+
+std::ostream & operator << (std::ostream & sortie, const EntierContraint & ec);
+std::istream & operator >> (std::istream & entree, EntierContraint & ec);
 
 // A compléter : rajouter operator << et operator >>
 // ATTENTION : ce sont des fonctions (pas des méthodes)

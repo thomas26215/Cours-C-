@@ -38,3 +38,22 @@ void EntierContraint::saisir(istream& entree) {
 void EntierContraint::afficher(ostream& sortie) const {
     sortie << this->getVal();
 }
+
+std::ostream & operator << (std::ostream & sortie, const EntierContraint & ec){
+    cout << "coucou";
+    return sortie;
+    /*
+    
+    Dans la fonction main, quand on fera cout << entier << endl;
+    => Cela affichera "coucouc" car c'est l'opérateur qui le dit. Je peux lui faire afficher n'importe quoi
+    
+    */
+}
+
+std::istream& operator>>(std::istream& entree, EntierContraint& ec) {
+    int val;
+    cout << "Rentrez une valeur" << endl;
+    entree >> val;
+    ec.setVal(val);
+    return entree;
+}

@@ -10,6 +10,39 @@ using namespace std;
 
 Groupe::Groupe(const std::string &intitule)
         : m_intitule(intitule) {
+            int nb_eleves;
+            /*cout << "Combien d'élèves ?"; cin >> nb_eleves;
+            m_effectif.resize(nb_eleves, nullptr);
+            for (int i = 0; i < nb_eleves; ++i) {
+                m_effectif[i] = new Personne("");
+            }*/
+}
+
+Groupe::~Groupe(){
+    cout << "Le groupe " << m_intitule << " a été supprimé";
+}
+
+Groupe::Groupe(const Groupe& autre) : m_intitule(autre.m_intitule) {
+    for (const auto& personne : autre.m_effectif) {
+        m_effectif.push_back(new Personne(*personne));
+    }
+}
+
+Groupe& Groupe::operator=(const Groupe& autre) {
+    if (this != &autre) {
+        // Libérer la mémoire existante
+        for (auto& personne : m_effectif) {
+            delete personne;
+        }
+        m_effectif.clear();
+        
+        // Copier les nouvelles données
+        m_intitule = autre.m_intitule;
+        for (const auto& personne : autre.m_effectif) {
+            m_effectif.push_back(new Personne(*personne));
+        }
+    }
+    return *this;
 }
 
 ///////////////////////////////////////////////////

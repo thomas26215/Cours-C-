@@ -8,6 +8,9 @@
 class Groupe {
 public:
     Groupe(const std::string & intitule = "Un Groupe");
+    Groupe (const Groupe& autre);
+    ~Groupe();
+    Groupe& operator=(const Groupe& autre);
     void setIntitule(const std::string & intitule);
     void addPersonne(const std::string & nom);
     void setNomPersonne(unsigned int i,

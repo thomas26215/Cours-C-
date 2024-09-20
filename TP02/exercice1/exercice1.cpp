@@ -5,9 +5,17 @@ using namespace std;
 
 int main(int argc, char** argv) {
     
-    // A Compléter
-    // Il faut tester operator int, operator << et operator >> sur la classe EntierContraint
+    try{
+        EntierContraint entier(10, 1, 20);
 
+        cout << entier << endl;
+        entier.saisir();s
+        cin >> entier;
+        
+
+    }catch(char const* erreur){
+        cout << "erreur";
+    }
     return 0;
 }
 
