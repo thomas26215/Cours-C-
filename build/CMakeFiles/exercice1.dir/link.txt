@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/exercice1.dir/exercice1/Visage.cpp.o CMakeFiles/exercice1.dir/exercice1/Exercice1.cpp.o -o exercice1 

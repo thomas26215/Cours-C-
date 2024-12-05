@@ -1,0 +1,3 @@
+/users/info/profs/martinp/CLionProjects/TP06-new/cmake-build-debug/CMakeFiles/TP06_new.dir
+/users/info/profs/martinp/CLionProjects/TP06-new/cmake-build-debug/CMakeFiles/edit_cache.dir
+/users/info/profs/martinp/CLionProjects/TP06-new/cmake-build-debug/CMakeFiles/rebuild_cache.dir

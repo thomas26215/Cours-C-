@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice1.dir/exercice1/Visage.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice1/Visage.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice1/Visage.cpp",
+  "output": "CMakeFiles/exercice1.dir/exercice1/Visage.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice1.dir/exercice1/Exercice1.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice1/Exercice1.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice1/Exercice1.cpp",
+  "output": "CMakeFiles/exercice1.dir/exercice1/Exercice1.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/Tarif.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Tarif.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Tarif.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/Tarif.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/Trajet.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Trajet.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Trajet.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/Trajet.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/Promotion.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Promotion.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Promotion.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/Promotion.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/Billet.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Billet.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/Billet.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/Billet.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/BilletReduit.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/BilletReduit.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/BilletReduit.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/BilletReduit.cpp.o"
+},
+{
+  "directory": "/home/thomas/Desktop/programmation/C++/Cours/build",
+  "command": "/usr/bin/c++   -g -std=gnu++14 -o CMakeFiles/exercice2.dir/exercice2/exercice2.cpp.o -c /home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/exercice2.cpp",
+  "file": "/home/thomas/Desktop/programmation/C++/Cours/TP03/exercice2/exercice2.cpp",
+  "output": "CMakeFiles/exercice2.dir/exercice2/exercice2.cpp.o"
+}
+]

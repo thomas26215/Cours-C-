@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/exercice2.dir/exercice2/Tarif.cpp.o CMakeFiles/exercice2.dir/exercice2/Trajet.cpp.o CMakeFiles/exercice2.dir/exercice2/Promotion.cpp.o CMakeFiles/exercice2.dir/exercice2/Billet.cpp.o CMakeFiles/exercice2.dir/exercice2/BilletReduit.cpp.o CMakeFiles/exercice2.dir/exercice2/exercice2.cpp.o -o exercice2 
