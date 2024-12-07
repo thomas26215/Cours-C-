@@ -576,98 +576,72 @@ string Mondial::deleteSpacesInWord(string word) const{
     return word; // Retourner la chaîne modifiée
 }
 
-/**
- * @brief Retourne un nœud correspondant à une condition avec un chemin donné.
- *
- * Cette fonction effectue une recherche récursive dans un arbre XML pour trouver 
- * un élément qui correspond à un nom spécifié. Elle prend en compte un vecteur 
- * d'éléments qui définit le chemin à parcourir dans l'arbre XML. Si l'élément 
- * correspondant est trouvé, il est retourné ; sinon, la fonction retourne null.
- *
- * @param actualElement Pointeur vers l'élément XML actuel à partir duquel 
- *                      la recherche commence. Doit être non nul.
- * @param nodeToReturn Le nom du nœud que l'on souhaite retourner si 
- *                     trouvé. Cela correspond au premier élément du vecteur 
- *                     `elements`.
- * @param elements Vecteur de chaînes représentant le chemin des éléments à 
- *                  parcourir dans l'arbre XML. Le premier élément est traité 
- *                  en premier lors de la recherche.
- * @param name Le texte que l'élément doit contenir pour être considéré comme 
- *             une correspondance valide. Si `actualElement` contient ce texte, 
- *             il sera retourné.
- *
- * @return Un pointeur vers l'élément XML correspondant si trouvé, sinon 
- *         retourne nullptr.
- *
- * @note Cette fonction utilise une recherche récursive et parcourt tous les 
- *       frères de chaque nœud jusqu'à ce qu'un élément correspondant soit trouvé.
- */
-XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name) const {
-    // Vérifiez si l'élément actuel est nul
+
+
+XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string>& elements, string name) const {
+
+cout << "coucou";
+
+    // Check if the current element is null or if the elements vector is empty
     if (actualElement == nullptr) {
         return nullptr;
     }
 
-    // Vérifiez si le vecteur elements n'est pas vide
-    if (elements.empty()) {
-        // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
-        if (actualElement->GetText() && name == actualElement->GetText()) {
-            cout << "trouvé" << endl;
-            return actualElement; // Retournez actualElement si le texte correspond
-        }
-        return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
-    }
-
-    // Obtenez le nom réel de l'élément actuel
-    string actual = elements[0];
-    bool elementToReturn = (nodeToReturn == actual);
-
-    // Obtenez le premier enfant avec le nom 'actual'
-    XMLElement* node = actualElement->FirstChildElement(actual.c_str());
-
-    // Supprimez le premier élément du vecteur pour la recherche récursive
-    elements.erase(elements.begin());
-
-    // Parcourez tous les frères de 'node'
-    while (node) {
-        cout << "--> " << actual << endl;
-
-        // Recherche récursive pour les éléments correspondants
-        XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name);
+    // Determine if the current node matches the node to return
+    if(elements){
         
-        if (result) {
-            cout << "réussi !" << endl;
-            if (elementToReturn) {
-                cout << "renvoyé" << actual << endl;
-                return node;  // Retournez le nœud correspondant à nodeToReturn
-            } else {
-                return result; // Retournez le résultat trouvé dans la récursion
-            }
-        }
+    bool elementToReturn = nodeToReturn == elements[0];
+    cout << elements[0] << " ----- " << elementToReturn << endl;
 
-        cout << "élément " << actual << endl;
-        node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
+    // Get the actual name of the current element
+    string actual = elements[0];
     }
 
-    return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
-}
+    XMLElement* node; 
 
+    // Check if we are at the last element in the vector
+    if (elements.size() == 1) {
 
-
-void Mondial::testGetElementWithParametersGetText() const {
-    XMLElement* element = racineMondial->FirstChildElement("riverscategory");
-    std::vector<string> elements = {"river", "source", "latitude"};
-
-    XMLElement* river = getElementWithParametersGetText(element, "river", elements, "56.01");
-
-    if (river) {
-        river = river->FirstChildElement("name");
-        if (river) {
-            cout << river->GetText() << endl;
-        } else {
-            cout << "Le nœud 'name' est nul." << endl;
+        cout << actualElement->GetText();
+        // If we are at the last element, check if it matches the name we're looking for
+        if (actualElement && actualElement->GetText() && name == actualElement->GetText()) {
+            cout << "trouvé" << endl;
+            return elementToReturn ? nullptr : actualElement; // Return actualElement only if not returning this node
         }
     } else {
-        cout << "Aucun élément 'river' trouvé." << endl;
+        // Get the first child element with the name 'actual'
+        node = actualElement->FirstChildElement(actual.c_str());
+        cout << "--> " << actual;
+        
+        // Remove the first element from the vector for recursive search
+        elements.erase(elements.begin());
+        
+        // Traverse through all siblings of 'node'
+        while (node) {
+            // Recursively search for matching elements
+            XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name);
+            if (result) {
+                cout << "réussi !";
+                return result; // Return found result
+            }
+            node = node->NextSiblingElement(actual.c_str()); // Move to next sibling
+        }
     }
+
+    return nullptr; // Return null if no matching element is found
 }
+
+
+
+
+void Mondial::testGetElementWithParametersGetText() const{
+    XMLElement* element = racineMondial->FirstChildElement("countriescategory")->FirstChildElement("country")->FirstChildElement("city")->FirstChildElement("name");
+    std::vector<string> elements = {};
+
+
+    
+
+
+    getElementWithParametersGetText(element, "city", elements, "Tirana");
+}
+

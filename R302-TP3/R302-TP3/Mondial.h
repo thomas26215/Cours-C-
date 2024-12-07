@@ -33,6 +33,8 @@ public:
 
     int getCountryPopulationFromName(string countryName) const;
 
+    int getCountryPopulationFromCity(string cityName) const;
+
     void printCountryBorders(string countryName) const;
 
     void printCountriesWithProvincesCrossedByRiver(string riverName) const;
@@ -41,14 +43,19 @@ public:
     
     void printCountriesAndProvincesCrossedByRiver(string riverName) const;
     
-    void printCityInformation(string cityName) const;
-    
+    void printCityInformation(const string& cityName) const;
+
     void printIslandsInformations() const;
+
+    int getCityPopulation(const XMLElement* city) const;
 
 
     void Print();
 
     virtual ~Mondial();
+
+
+    void testGetElementWithParametersGetText() const;
 
 private:
     // Un XMLDocument permet d'accéder à toutes les fonctionnalités de la bibliothèque
@@ -84,6 +91,14 @@ private:
     XMLElement* getCountryXmlelementFromCode(string countryCode) const;
 
     XMLElement* getRiverXmlelementFromNameIter(string riverName) const;
+
+    void printCityDetails(const XMLElement* city, const XMLElement* country) const;
+
+    XMLElement* getCityFromProvince(string cityName) const;
+
+    string deleteSpacesInWord(string word) const;
+
+    XMLElement* getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name) const;
 
     // Procédures de découpage des chaînes en mots
 

@@ -196,6 +196,15 @@ void testPrintCityInformation(Mondial& theMondial) {
     cout << endl;
 }
 
+void testGetElementsInWord(Mondial& theMondial){
+    cout << endl << "************************************************" << endl;
+    cout << "*                                              *" << endl;
+    cout << "* Récupérer un élément en spécifiant le chemin *" << endl;
+    cout << "*                                              *" << endl;
+    cout << "************************************************" << endl << endl;
+   theMondial.testGetElementWithParametersGetText(); 
+}
+
 int main() {
 
     /*
@@ -225,6 +234,7 @@ int main() {
     testPrintCountriesWithProvincesCrossedByRiver(theMondial);
     testPrintCountriesAndProvincesCrossedByRiver(theMondial);
     testPrintCityInformation(theMondial);
+    testGetElementsInWord(theMondial);
 
     //theMondial.printIslandsInformations();
     
