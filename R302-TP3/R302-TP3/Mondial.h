@@ -100,6 +100,7 @@ private:
 
     XMLElement* getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name) const;
 
+    XMLElement* getElementWithParametersAttribute(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name, string attribut) const;
     // Procédures de découpage des chaînes en mots
 
     template<typename Out>

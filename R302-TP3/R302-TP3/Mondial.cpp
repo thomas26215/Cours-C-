@@ -612,7 +612,6 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
     if (elements.empty()) {
         // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
         if (actualElement->GetText() && name == actualElement->GetText()) {
-            cout << "trouvé" << endl;
             return actualElement; // Retournez actualElement si le texte correspond
         }
         return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
@@ -630,22 +629,18 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
 
     // Parcourez tous les frères de 'node'
     while (node) {
-        cout << "--> " << actual << endl;
 
         // Recherche récursive pour les éléments correspondants
         XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name);
         
         if (result) {
-            cout << "réussi !" << endl;
             if (elementToReturn) {
-                cout << "renvoyé" << actual << endl;
                 return node;  // Retournez le nœud correspondant à nodeToReturn
             } else {
                 return result; // Retournez le résultat trouvé dans la récursion
             }
         }
 
-        cout << "élément " << actual << endl;
         node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
     }
 
@@ -654,11 +649,88 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
 
 
 
+
+/**
+ * @brief Retourne un nœud correspondant à une condition avec un chemin donné.
+ *
+ * Cette fonction effectue une recherche récursive dans un arbre XML pour trouver 
+ * un élément qui correspond à un nom spécifié. Elle prend en compte un vecteur 
+ * d'éléments qui définit le chemin à parcourir dans l'arbre XML. Si l'élément 
+ * correspondant est trouvé, il est retourné ; sinon, la fonction retourne null.
+ *
+ * @param actualElement Pointeur vers l'élément XML actuel à partir duquel 
+ *                      la recherche commence. Doit être non nul.
+ * @param nodeToReturn Le nom du nœud que l'on souhaite retourner si 
+ *                     trouvé. Cela correspond au premier élément du vecteur 
+ *                     `elements`.
+ * @param elements Vecteur de chaînes représentant le chemin des éléments à 
+ *                  parcourir dans l'arbre XML. Le premier élément est traité 
+ *                  en premier lors de la recherche.
+ * @param name Le texte que l'élément doit contenir pour être considéré comme 
+ *             une correspondance valide. Si `actualElement` contient ce texte, 
+ *             il sera retourné.
+ *
+ * @return Un pointeur vers l'élément XML correspondant si trouvé, sinon 
+ *         retourne nullptr.
+ *
+ * @note Cette fonction utilise une recherche récursive et parcourt tous les 
+ *       frères de chaque nœud jusqu'à ce qu'un élément correspondant soit trouvé.
+ */
+XMLElement* Mondial::getElementWithParametersAttribute(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name, string attribut) const {
+    // Vérifiez si l'élément actuel est nul
+    if (actualElement == nullptr) {
+        return nullptr;
+    }
+
+    cout << "-->" << elements[0] << endl;
+
+    // Vérifiez si le vecteur elements n'est pas vide
+    if (elements.size() == 1) {
+        // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
+        if (actualElement->Attribute(attribut.c_str()) && name == actualElement->Attribute(attribut.c_str())) {
+            return actualElement; // Retournez actualElement si le texte correspond
+        }
+        return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+    }
+
+    // Obtenez le nom réel de l'élément actuel
+    string actual = elements[0];
+    bool elementToReturn = (nodeToReturn == actual);
+
+    // Obtenez le premier enfant avec le nom 'actual'
+    XMLElement* node = actualElement->FirstChildElement(actual.c_str());
+
+    // Supprimez le premier élément du vecteur pour la recherche récursive
+    elements.erase(elements.begin());
+
+    // Parcourez tous les frères de 'node'
+    while (node) {
+
+        // Recherche récursive pour les éléments correspondants
+        XMLElement* result = getElementWithParametersAttribute(node, nodeToReturn, elements, name, attribut);
+        
+        if (result) {
+            if (elementToReturn) {
+                return node;  // Retournez le nœud correspondant à nodeToReturn
+            } else {
+                return result; // Retournez le résultat trouvé dans la récursion
+            }
+        }
+
+        node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
+    }
+
+    return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+}
+
+
+
+
 void Mondial::testGetElementWithParametersGetText() const {
     XMLElement* element = racineMondial->FirstChildElement("riverscategory");
     std::vector<string> elements = {"river", "source", "latitude"};
 
-    XMLElement* river = getElementWithParametersGetText(element, "river", elements, "56.01");
+    XMLElement* river = getElementWithParametersGetText(element, "river", elements, "64.8");
 
     if (river) {
         river = river->FirstChildElement("name");
@@ -670,4 +742,22 @@ void Mondial::testGetElementWithParametersGetText() const {
     } else {
         cout << "Aucun élément 'river' trouvé." << endl;
     }
+
+    
+    element = racineMondial->FirstChildElement("countriescategory");
+    elements = {"country", "province", "city", "id"};
+
+    XMLElement* country = getElementWithParametersAttribute(element, "country", elements, "cty-Greece-9", "id");
+
+    if (country) {
+        country = country->FirstChildElement("name");
+        if (country) {
+            cout << country->GetText() << endl;
+        } else {
+            cout << "Le nœud 'name' est nul." << endl;
+        }
+    } else {
+        cout << "Aucun élément 'country' trouvé." << endl;
+    }
+    
 }
