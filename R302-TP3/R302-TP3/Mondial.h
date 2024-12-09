@@ -19,6 +19,11 @@ using namespace std;
 
 class Mondial {
 public:
+
+
+
+
+
     Mondial(const char* filename);
 
     int getNbAirports() const;
@@ -98,9 +103,9 @@ private:
 
     string deleteSpacesInWord(string word) const;
 
-    XMLElement* getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name) const;
+    XMLElement* getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name, int actualNode = 0) const;
 
-    XMLElement* getElementWithParametersAttribute(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name, string attribut) const;
+XMLElement* getElementWithParametersAttribute(XMLElement* actualElement, string nodeToReturn, std::vector<string>elements, string name, string attribut) const;
     // Procédures de découpage des chaînes en mots
 
     template<typename Out>

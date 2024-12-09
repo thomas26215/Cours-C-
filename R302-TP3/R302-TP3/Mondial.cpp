@@ -602,14 +602,16 @@ string Mondial::deleteSpacesInWord(string word) const{
  * @note Cette fonction utilise une recherche récursive et parcourt tous les 
  *       frères de chaque nœud jusqu'à ce qu'un élément correspondant soit trouvé.
  */
-XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name) const {
+XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name, int actualNode) const {
+
+    
+
     // Vérifiez si l'élément actuel est nul
     if (actualElement == nullptr) {
         return nullptr;
-    }
-
+    } 
     // Vérifiez si le vecteur elements n'est pas vide
-    if (elements.empty()) {
+    if (actualNode == elements.size()) {
         // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
         if (actualElement->GetText() && name == actualElement->GetText()) {
             return actualElement; // Retournez actualElement si le texte correspond
@@ -618,20 +620,19 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
     }
 
     // Obtenez le nom réel de l'élément actuel
-    string actual = elements[0];
+    string actual = elements[actualNode];
     bool elementToReturn = (nodeToReturn == actual);
 
     // Obtenez le premier enfant avec le nom 'actual'
     XMLElement* node = actualElement->FirstChildElement(actual.c_str());
 
-    // Supprimez le premier élément du vecteur pour la recherche récursive
-    elements.erase(elements.begin());
 
     // Parcourez tous les frères de 'node'
     while (node) {
 
+        cout << "--> " << elements[actualNode] << " " << elements.size() << " " << actualNode << endl;
         // Recherche récursive pour les éléments correspondants
-        XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name);
+        XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name, actualNode+1);
         
         if (result) {
             if (elementToReturn) {
