@@ -621,7 +621,6 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
 
     // Obtenez le nom réel de l'élément actuel
     string actual = elements[actualNode];
-    bool elementToReturn = (nodeToReturn == actual);
 
     // Obtenez le premier enfant avec le nom 'actual'
     XMLElement* node = actualElement->FirstChildElement(actual.c_str());
@@ -635,11 +634,29 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
         XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name, actualNode+1);
         
         if (result) {
-            if (elementToReturn) {
+            if (elements[actualNode] == nodeToReturn) {
                 return node;  // Retournez le nœud correspondant à nodeToReturn
-            } else {
-                return result; // Retournez le résultat trouvé dans la récursion
             }
+            std::vector<string> noeuds = split(nodeToReturn, '-');
+            cout << "condition : " << noeuds[0] << " = " << elements[actualNode] << endl;
+            if(noeuds[0] == elements[actualNode]){
+                for (size_t i = 1; i < noeuds.size(); ++i) {
+                    if(node == nullptr){
+                        return result;
+                    }
+                    cout << noeuds[i] << endl;
+                    node = node->FirstChildElement(noeuds[i].c_str());
+                }
+                if(node == nullptr){
+                    return result;
+                }else{
+                    return node;
+                }
+            }else{
+                return result;
+            }
+            return result; // Retournez le résultat trouvé dans la récursion
+        
         }
 
         node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
@@ -729,12 +746,12 @@ XMLElement* Mondial::getElementWithParametersAttribute(XMLElement* actualElement
 
 void Mondial::testGetElementWithParametersGetText() const {
     XMLElement* element = racineMondial->FirstChildElement("riverscategory");
-    std::vector<string> elements = {"river", "source", "latitude"};
+    std::vector<string> elements = {"river", "estuary", "longitude"};
 
-    XMLElement* river = getElementWithParametersGetText(element, "river", elements, "64.8");
+    XMLElement* river = getElementWithParametersGetText(element, "river-area", elements, "-0.69");
 
     if (river) {
-        river = river->FirstChildElement("name");
+        river = river;
         if (river) {
             cout << river->GetText() << endl;
         } else {
