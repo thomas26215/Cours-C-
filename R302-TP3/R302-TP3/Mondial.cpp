@@ -16,6 +16,7 @@
 #include <iterator>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 Mondial::Mondial(const char* filename) {
     // Chargement du fichier XML en mémoire
@@ -87,9 +88,7 @@ int Mondial::getNbDeserts() const {
     return nbDeserts;
 }
 
-/*
- * A COMPLETER
- */
+
 int Mondial::getNbElemCat(const string categoryName) {
     // Obtenir le nom de la catégorie XML correspondante
     const string xmlCategoryName = decod_category[categoryName];
@@ -112,9 +111,7 @@ int Mondial::getNbElemCat(const string categoryName) {
     
     return count;
 }
-/*
- * A COMPLETER
- */
+
 XMLElement* Mondial::getCountryXmlelementFromNameRec(string countryName) const {
     XMLElement* element = racineMondial->FirstChildElement("countriescategory")->FirstChildElement();
     
@@ -123,9 +120,7 @@ XMLElement* Mondial::getCountryXmlelementFromNameRec(string countryName) const {
    return getCountryXmlelementFromNameRecWorker(element,  countryName); 
 }
 
-/*
- * A COMPLETER
- */
+
 XMLElement* Mondial::getCountryXmlelementFromNameRecWorker(XMLElement* currentCountryElement, string countryName) const {
     if (currentCountryElement == nullptr) {
         return nullptr; // Si l'élément courant est nul, retourner nul
@@ -144,9 +139,7 @@ XMLElement* Mondial::getCountryXmlelementFromNameRecWorker(XMLElement* currentCo
     // Appeler récursivement pour le frère suivant
     return getCountryXmlelementFromNameRecWorker(currentCountryElement->NextSiblingElement("country"), countryName);
 }
-/*
- * A COMPLETER
- */
+
 string Mondial::getCountryCodeFromName(string countryName) const noexcept(false) {
     XMLElement* name = getCountryXmlelementFromNameRec(countryName);
     if(name == nullptr){
@@ -230,48 +223,43 @@ int Mondial::getCountryPopulationFromName(string countryName) const {
     return hasPopulationData ? lastPopulation : 0; // Retourner la dernière population ou 0 si aucune donnée
 }
 
-
-
-/*
- * A COMPLETER
- */
 void Mondial::printCountryBorders(string countryName) const {
     XMLElement* countryElement = racineMondial->FirstChildElement("countriescategory")->FirstChildElement("country");
     
-    bool found = false;
-
     while (countryElement) {
-        const char* nameText = countryElement->FirstChildElement("name")->GetText();
-        
-        if (nameText && countryName == nameText) {
-            found = true;
-            cout << "----------------------------------------------------------------------------------------------" << endl;
-            cout << "Frontières de " << countryName << ":" << endl;
-
+        XMLElement* nameElement = countryElement->FirstChildElement("name");
+        if (nameElement && nameElement->GetText() == countryName) {
             XMLElement* borderElement = countryElement->FirstChildElement("border");
+
+            if (!borderElement) {
+                cout << "Le pays : " << countryName << ", n'a pas de pays frontalier !" << endl;
+                return;
+            }
+
+            cout << "Le pays : " << countryName << endl;
+
             while (borderElement) {
                 const char* borderCountry = borderElement->Attribute("country");
                 XMLElement* newCountryElement = getCountryXmlelementFromCode(borderCountry);
 
                 if (newCountryElement) {
-                    cout << " est frontalier avec  " << newCountryElement->FirstChildElement("name")->GetText() << ", la longueur de sa frontière avec celui-ci est de  : " << borderElement->Attribute("length") << endl;
+                    const char* borderName = newCountryElement->FirstChildElement("name")->GetText();
+                    const char* borderLength = borderElement->Attribute("length");
+                    cout << " est frontalier avec : " << borderName 
+                         << ", la longueur de sa frontière avec celui-ci est de : " << borderLength << endl;
                 }
                 borderElement = borderElement->NextSiblingElement("border");
             }
-            break;
+            return;
         }
-
         countryElement = countryElement->NextSiblingElement("country");
     }
 
-    if (!found) {
-        cout << "Le pays " << countryName << " n'a pas été trouvé." << endl;
-    }
+    cout << "Le pays " << countryName << " n'a pas été trouvé." << endl;
 }
 
-/*
- * A COMPLETER
- */
+
+
 XMLElement* Mondial::getRiverXmlelementFromNameIter(string riverName) const {
     XMLElement* element = racineMondial->FirstChildElement("riverscategory")->FirstChildElement("river");
     while(element){
@@ -283,80 +271,65 @@ XMLElement* Mondial::getRiverXmlelementFromNameIter(string riverName) const {
     }
     return nullptr;
 }
-/*
- * A COMPLETER
- */
+
 void Mondial::printAllCountriesCrossedByRiver(string riverName) const {
     XMLElement* riverElement = getRiverXmlelementFromNameIter(riverName);
     XMLElement* country;
     string countries = riverElement->Attribute("country");
     std::vector<string> rivers = Mondial::split(countries, ' ');
 
-    cout << "--Pays du fleuve " << riverName << " : " << endl;
+    cout << "Le fleuve : " << riverName << endl << " traverse les pays suivants : ";
 
     for (size_t i = 0; i < rivers.size(); i++) {
         country = getCountryXmlelementFromCode(rivers[i]);
-        cout << country->FirstChildElement("name")->GetText() << endl;
+        cout << country->FirstChildElement("name")->GetText();
+        if(rivers.size()-1 != i){
+            cout << ", ";
+        }
     }
-    cout << endl << "La longueur du fleuve est de : " << riverElement->FirstChildElement("length")->GetText() << endl;
+    cout << " ; Il a la longueur suivante : " << riverElement->FirstChildElement("length")->GetText() << endl;
     cout << endl << endl;
 
 }
 
-/*
- * A COMPLETER
- */
+
 void Mondial::printCountriesWithProvincesCrossedByRiver(string riverName) const {
-    // Obtenir l'élément XML de la rivière par son nom
     XMLElement* riverElement = getRiverXmlelementFromNameIter(riverName);
     
-    // Vérifier si l'élément de la rivière existe
     if (!riverElement) {
-        cout << "La rivière '" << riverName << "' n'a pas été trouvée." << endl;
+        cout << "Le fleuve : " << riverName << ", n'existe pas !" << endl;
         return;
     }
 
-    cout << "coucou";
+    cout << "Le fleuve : " << riverName << endl;
+    cout << " traverse les pays suivants : ";
 
-    // Obtenir le premier élément "located" qui contient les pays
     XMLElement* locatedElement = riverElement->FirstChildElement("located");
+    bool firstCountry = true;
     
-    
-    
-    // Boucle tant qu'il y a des éléments "located"
     while (locatedElement) {
-        // Récupérer le code du pays à partir du texte de l'élément "located"
         const char* countryCode = locatedElement->Attribute("country");
         
-        // Vérifier si countryCode n'est pas nul
         if (countryCode) {
-            // Obtenir l'élément XML du pays par son code
             XMLElement* country = getCountryXmlelementFromCode(countryCode);
-
-
             
-            // Vérifier si l'élément du pays existe
             if (country) {
-                // Afficher le nom du pays
-                cout << country->FirstChildElement("name")->GetText() << endl;
-            } else {
-                cout << "Erreur : Le pays avec le code '" << countryCode << "' n'a pas été trouvé." << endl;
+                if (!firstCountry) {
+                    cout << ", ";
+                }
+                cout << country->FirstChildElement("name")->GetText();
+                firstCountry = false;
             }
-        } else {
-            cout << "Erreur : Le code du pays est nul." << endl;
         }
 
-        // Passer à l'élément suivant "located"
         locatedElement = locatedElement->NextSiblingElement("located");
     }
-        cout << riverElement->FirstChildElement("length")->GetText() << endl;
+
+    cout << " ; il a la longueur suivante : " << riverElement->FirstChildElement("length")->GetText() << endl;
 }
 
-/*
- * A COMPLETER
- */
+
 void Mondial::printCountriesAndProvincesCrossedByRiver(string riverName) const {
-    // Retrieve the XML element for the specified river
     XMLElement* riverElement = getRiverXmlelementFromNameIter(riverName);
     
     if (riverElement == nullptr) {
@@ -364,7 +337,6 @@ void Mondial::printCountriesAndProvincesCrossedByRiver(string riverName) const {
         return;
     }
 
-    // Get the countries attribute from the river element
     string countries = riverElement->Attribute("country");
     std::vector<string> rivers = Mondial::split(countries, ' ');
 
@@ -372,7 +344,6 @@ void Mondial::printCountriesAndProvincesCrossedByRiver(string riverName) const {
          << " de longueur " << riverElement->FirstChildElement("length")->GetText() 
          << " traverse les pays suivants :" << endl;
 
-    // Iterate over each country code
     for (const auto& countryCode : rivers) {
         XMLElement* country = getCountryXmlelementFromCode(countryCode);
         
@@ -380,73 +351,29 @@ void Mondial::printCountriesAndProvincesCrossedByRiver(string riverName) const {
             cout << "   - " << country->FirstChildElement("name")->GetText() 
                  << ", où il traverse les divisions administratives suivantes :" << endl;
 
-            // Retrieve all <located> elements related to this river
             XMLElement* divisionAdministrative = riverElement->FirstChildElement("located");
             while (divisionAdministrative) {
-                // Check if the located element matches the current country code
                 if (divisionAdministrative->Attribute("country") == countryCode) {
                     string provinceCodes = divisionAdministrative->Attribute("province");
                     std::vector<std::string> provinces = Mondial::split(provinceCodes, ' ');
 
-                    // Iterate over each province code
                     for (const auto& provinceCode : provinces) {
                         XMLElement* province = country->FirstChildElement("province");
                         while (province) {
                             if (province->Attribute("id") == provinceCode) {
-                                cout << "      - " << province->FirstChildElement("name")->GetText() << endl;
-                                break; // Found the matching province, no need to continue
-                            }
+                                cout << "      * " << province->FirstChildElement("name")->GetText() << endl;
+                                break;                             }
                             province = province->NextSiblingElement("province");
                         }
                     }
                 }
-                divisionAdministrative = divisionAdministrative->NextSiblingElement("located"); // Move to next <located> element
-            }
+                divisionAdministrative = divisionAdministrative->NextSiblingElement("located");            }
         } else {
             cout << "Erreur : pays non trouvé pour le code " << countryCode << endl;
         }
     }
 }
 
-void Mondial::printCityInformation(const string& cityName) const {
-
-    XMLElement* country = getCityFromProvince(cityName);
-
-    /*const XMLElement* country = racineMondial->FirstChildElement("countriescategory")->FirstChildElement("country");
-    bool found = false;
-
-    while (country && !found) {
-        const XMLElement* city = country->FirstChildElement("city");
-        
-        while (city) {
-            const XMLElement* name = city->FirstChildElement("name");
-            
-            while (name) {
-                if (name->GetText() == cityName) {
-                    found = true;
-                    printCityDetails(city, country);
-                    break;
-                }
-                name = name->NextSiblingElement("name");
-            }
-            
-            if (found) break;
-            city = city->NextSiblingElement("city");
-        }
-        
-        if (!found) country = country->NextSiblingElement("country");
-    }
-
-    if (!found) {
-        cout << "La ville " << cityName << ", n'existe pas !" << endl;
-    }*/
-    //printCityDetails(city, country)
-}
-#include <iostream>
-#include <string>
-#include <algorithm> // Pour std::remove_if
-
-using namespace std;
 
 XMLElement* Mondial::getCityFromProvince(string cityName) const {
     XMLElement* country = racineMondial->FirstChildElement("countriescategory")->FirstChildElement("country");
@@ -464,7 +391,7 @@ XMLElement* Mondial::getCityFromProvince(string cityName) const {
                 XMLElement* city = province->FirstChildElement("city");
                 string newCityName = deleteSpacesInWord(city->FirstChildElement("name")->GetText());
                 while (city) {
-                    // Comparez le nom de la ville avec cityName
+                    // Comparer le nom de la ville avec cityName
                     if (newCityName == cityName) {
                         return city;  // Retourne le pointeur vers la ville trouvée
                     }
@@ -478,34 +405,77 @@ XMLElement* Mondial::getCityFromProvince(string cityName) const {
 
     return nullptr;  // Retourne nullptr si aucune ville n'est trouvée
 }
-void Mondial::printCityDetails(const XMLElement* city, const XMLElement* country) const {
 
-    cout << "La ville " << city->FirstChildElement("name")->GetText() << endl;
-    cout << " - se trouve dans le pays : " << country->FirstChildElement("name")->GetText() << endl;
-    
-    const XMLElement* province = city->Parent()->ToElement();
-    if (province->Name() == string("province")) {
-        cout << " - dans la division administrative : " << province->FirstChildElement("name")->GetText() << endl;
-    }
-    
-    if (const XMLElement* latitude = city->FirstChildElement("latitude")) {
-        cout << " - sa latitude est : " << latitude->GetText() << endl;
-    }
-    
-    if (const XMLElement* longitude = city->FirstChildElement("longitude")) {
-        cout << " - sa longitude est : " << longitude->GetText() << endl;
-    }
-    
-    if (const XMLElement* elevation = city->FirstChildElement("elevation")) {
-        cout << " - son altitude est : " << elevation->GetText() << endl;
-    }
-    
-    if (const XMLElement* population = city->FirstChildElement("population")) {
-        cout << " - sa population est : " << getCityPopulation(city) << endl;
+void Mondial::printCityInformation(const std::string& cityName) const {
+    const XMLElement* country = racineMondial->FirstChildElement("countriescategory")->FirstChildElement("country");
+    bool found = false;
+
+    while (country && !found) {
+        // Recherche dans country->city->name
+        const XMLElement* cityDirect = country->FirstChildElement("city");
+        while (cityDirect && !found) {
+            const XMLElement* nameDirect = cityDirect->FirstChildElement("name");
+            if (nameDirect && nameDirect->GetText() == cityName) {
+                found = true;
+                printCityDetails(cityDirect, country);
+                break;
+            }
+            cityDirect = cityDirect->NextSiblingElement("city");
+        }
+
+        // Recherche dans country->province->city->name
+        if (!found) {
+            const XMLElement* province = country->FirstChildElement("province");
+            while (province && !found) {
+                const XMLElement* city = province->FirstChildElement("city");
+                while (city && !found) {
+                    const XMLElement* name = city->FirstChildElement("name");
+                    if (name && name->GetText() == cityName) {
+                        found = true;
+                        printCityDetails(city, country);
+                        break;
+                    }
+                    city = city->NextSiblingElement("city");
+                }
+                province = province->NextSiblingElement("province");
+            }
+        }
+
+        if (!found) {
+            country = country->NextSiblingElement("country");
+        }
     }
 
+    if (!found) {
+        std::cout << "La ville " << cityName << " n'existe pas !" << std::endl;
+    }
 }
 
+void Mondial::printCityDetails(const XMLElement* city, const XMLElement* country) const {
+    std::cout << "La ville " << city->FirstChildElement("name")->GetText() << std::endl;
+    std::cout << " - se trouve dans le pays : " << country->FirstChildElement("name")->GetText() << std::endl;
+
+    const XMLElement* province = city->Parent()->ToElement();
+    if (province && province->Name() == std::string("province")) {
+        std::cout << " - dans la division administrative : " << province->FirstChildElement("name")->GetText() << std::endl;
+    }
+
+    if (const XMLElement* latitude = city->FirstChildElement("latitude")) {
+        std::cout << " - sa latitude est : " << latitude->GetText() << std::endl;
+    }
+
+    if (const XMLElement* longitude = city->FirstChildElement("longitude")) {
+        std::cout << " - sa longitude est : " << longitude->GetText() << std::endl;
+    }
+
+    if (const XMLElement* elevation = city->FirstChildElement("elevation")) {
+        std::cout << " - son altitude est : " << elevation->GetText() << std::endl;
+    }
+
+    if (const XMLElement* population = city->FirstChildElement("population")) {
+        std::cout << " - sa population est : " << getCityPopulation(city) << std::endl;
+    }
+}
 
 int Mondial::getCityPopulation(const XMLElement* city) const{
 
@@ -576,75 +546,47 @@ string Mondial::deleteSpacesInWord(string word) const{
     return word; // Retourner la chaîne modifiée
 }
 
-/**
- * @brief Retourne un nœud correspondant à une condition avec un chemin donné.
- *
- * Cette fonction effectue une recherche récursive dans un arbre XML pour trouver 
- * un élément qui correspond à un nom spécifié. Elle prend en compte un vecteur 
- * d'éléments qui définit le chemin à parcourir dans l'arbre XML. Si l'élément 
- * correspondant est trouvé, il est retourné ; sinon, la fonction retourne null.
- *
- * @param actualElement Pointeur vers l'élément XML actuel à partir duquel 
- *                      la recherche commence. Doit être non nul.
- * @param nodeToReturn Le nom du nœud que l'on souhaite retourner si 
- *                     trouvé. Cela correspond au premier élément du vecteur 
- *                     `elements`.
- * @param elements Vecteur de chaînes représentant le chemin des éléments à 
- *                  parcourir dans l'arbre XML. Le premier élément est traité 
- *                  en premier lors de la recherche.
- * @param name Le texte que l'élément doit contenir pour être considéré comme 
- *             une correspondance valide. Si `actualElement` contient ce texte, 
- *             il sera retourné.
- *
- * @return Un pointeur vers l'élément XML correspondant si trouvé, sinon 
- *         retourne nullptr.
- *
- * @note Cette fonction utilise une recherche récursive et parcourt tous les 
- *       frères de chaque nœud jusqu'à ce qu'un élément correspondant soit trouvé.
- */
+
 XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name, int actualNode) const {
 
     
 
-    // Vérifiez si l'élément actuel est nul
+    // Vérifier si l'élément actuel est nul
     if (actualElement == nullptr) {
         return nullptr;
     } 
-    // Vérifiez si le vecteur elements n'est pas vide
+    // Vérifier si le vecteur elements n'est pas vide
     if (actualNode == elements.size()) {
-        // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
+        // Si nous sommes au dernier élément, vérifier s'il correspond au nom recherché
         if (actualElement->GetText() && name == actualElement->GetText()) {
             return actualElement; // Retournez actualElement si le texte correspond
         }
-        return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+        return nullptr; // Retourner null si aucun élément correspondant n'est trouvé
     }
 
-    // Obtenez le nom réel de l'élément actuel
+    // Obtenir le nom réel de l'élément actuel
     string actual = elements[actualNode];
 
-    // Obtenez le premier enfant avec le nom 'actual'
+    // Obtenir le premier enfant avec le nom 'actual'
     XMLElement* node = actualElement->FirstChildElement(actual.c_str());
 
 
-    // Parcourez tous les frères de 'node'
+    // Parcourir tous les frères de 'node'
     while (node) {
 
-        cout << "--> " << elements[actualNode] << " " << elements.size() << " " << actualNode << endl;
         // Recherche récursive pour les éléments correspondants
         XMLElement* result = getElementWithParametersGetText(node, nodeToReturn, elements, name, actualNode+1);
         
         if (result) {
             if (elements[actualNode] == nodeToReturn) {
-                return node;  // Retournez le nœud correspondant à nodeToReturn
+                return node;  // Retourner le nœud correspondant à nodeToReturn
             }
             std::vector<string> noeuds = split(nodeToReturn, '-');
-            cout << "condition : " << noeuds[0] << " = " << elements[actualNode] << endl;
             if(noeuds[0] == elements[actualNode]){
                 for (size_t i = 1; i < noeuds.size(); ++i) {
                     if(node == nullptr){
                         return result;
                     }
-                    cout << noeuds[i] << endl;
                     node = node->FirstChildElement(noeuds[i].c_str());
                 }
                 if(node == nullptr){
@@ -655,17 +597,15 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
             }else{
                 return result;
             }
-            return result; // Retournez le résultat trouvé dans la récursion
+            return result; // Retourner le résultat trouvé dans la récursion
         
         }
 
-        node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
+        node = node->NextSiblingElement(actual.c_str()); // Passer au frère suivant
     }
 
-    return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+    return nullptr; // Retourner null si aucun élément correspondant n'est trouvé
 }
-
-
 
 
 /**
@@ -695,33 +635,32 @@ XMLElement* Mondial::getElementWithParametersGetText(XMLElement* actualElement, 
  *       frères de chaque nœud jusqu'à ce qu'un élément correspondant soit trouvé.
  */
 XMLElement* Mondial::getElementWithParametersAttribute(XMLElement* actualElement, string nodeToReturn, std::vector<string> elements, string name, string attribut) const {
-    // Vérifiez si l'élément actuel est nul
+    // Vérifier si l'élément actuel est nul
     if (actualElement == nullptr) {
         return nullptr;
     }
 
-    cout << "-->" << elements[0] << endl;
 
-    // Vérifiez si le vecteur elements n'est pas vide
+    // Vérifier si le vecteur elements n'est pas vide
     if (elements.size() == 1) {
-        // Si nous sommes au dernier élément, vérifiez s'il correspond au nom recherché
+        // Si nous sommes au dernier élément, vérifier s'il correspond au nom recherché
         if (actualElement->Attribute(attribut.c_str()) && name == actualElement->Attribute(attribut.c_str())) {
-            return actualElement; // Retournez actualElement si le texte correspond
+            return actualElement; // Retourner actualElement si le texte correspond
         }
-        return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+        return nullptr; // Retourner null si aucun élément correspondant n'est trouvé
     }
 
-    // Obtenez le nom réel de l'élément actuel
+    // Obtenir le nom réel de l'élément actuel
     string actual = elements[0];
     bool elementToReturn = (nodeToReturn == actual);
 
-    // Obtenez le premier enfant avec le nom 'actual'
+    // Obtenir le premier enfant avec le nom 'actual'
     XMLElement* node = actualElement->FirstChildElement(actual.c_str());
 
-    // Supprimez le premier élément du vecteur pour la recherche récursive
+    // Supprimer le premier élément du vecteur pour la recherche récursive
     elements.erase(elements.begin());
 
-    // Parcourez tous les frères de 'node'
+    // Parcourir tous les frères de 'node'
     while (node) {
 
         // Recherche récursive pour les éléments correspondants
@@ -729,53 +668,65 @@ XMLElement* Mondial::getElementWithParametersAttribute(XMLElement* actualElement
         
         if (result) {
             if (elementToReturn) {
-                return node;  // Retournez le nœud correspondant à nodeToReturn
+                return node;  // Retourner le nœud correspondant à nodeToReturn
             } else {
-                return result; // Retournez le résultat trouvé dans la récursion
+                return result; // Retourner le résultat trouvé dans la récursion
             }
         }
 
-        node = node->NextSiblingElement(actual.c_str()); // Passez au frère suivant
+        node = node->NextSiblingElement(actual.c_str()); // Passer au frère suivant
     }
 
-    return nullptr; // Retournez null si aucun élément correspondant n'est trouvé
+    return nullptr; // Retourner null si aucun élément correspondant n'est trouvé
 }
 
 
 
 
 void Mondial::testGetElementWithParametersGetText() const {
+    // Étape 1: Récupération de l'élément racine pour les rivières
     XMLElement* element = racineMondial->FirstChildElement("riverscategory");
     std::vector<string> elements = {"river", "estuary", "longitude"};
 
+    // Étape 2: Recherche d'un élément 'river' avec des paramètres spécifiques
+    cout << "Recherche de l'élément 'river-area' dans 'riverscategory' avec les éléments : ";
+    for (const auto& el : elements) {
+        cout << el << " ";
+    }
+    cout << "et la valeur '-0.69'." << endl;
+
     XMLElement* river = getElementWithParametersGetText(element, "river-area", elements, "-0.69");
 
+    // Étape 3: Vérification du résultat de la recherche de l'élément 'river'
     if (river) {
-        river = river;
-        if (river) {
-            cout << river->GetText() << endl;
-        } else {
-            cout << "Le nœud 'name' est nul." << endl;
-        }
+        cout << "Élément 'river' trouvé : " << river->GetText() << endl;
     } else {
         cout << "Aucun élément 'river' trouvé." << endl;
     }
 
-    
+    // Étape 4: Récupération de l'élément racine pour les pays
     element = racineMondial->FirstChildElement("countriescategory");
     elements = {"country", "province", "city", "id"};
 
+    // Étape 5: Recherche d'un élément 'country' avec des paramètres spécifiques
+    cout << "Recherche de l'élément 'country' dans 'countriescategory' avec les éléments : ";
+    for (const auto& el : elements) {
+        cout << el << " ";
+    }
+    cout << "et l'identifiant 'cty-Greece-9'." << endl;
+
     XMLElement* country = getElementWithParametersAttribute(element, "country", elements, "cty-Greece-9", "id");
 
+    // Étape 6: Vérification du résultat de la recherche de l'élément 'country'
     if (country) {
-        country = country->FirstChildElement("name");
-        if (country) {
-            cout << country->GetText() << endl;
+        XMLElement* nameNode = country->FirstChildElement("name");
+        if (nameNode) {
+            cout << "Nom du pays trouvé : " << nameNode->GetText() << endl;
         } else {
-            cout << "Le nœud 'name' est nul." << endl;
+            cout << "Le nœud 'name' est nul dans l'élément 'country'." << endl;
         }
     } else {
         cout << "Aucun élément 'country' trouvé." << endl;
     }
-    
 }
+
